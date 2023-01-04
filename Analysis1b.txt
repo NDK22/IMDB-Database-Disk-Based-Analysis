@@ -1,0 +1,283 @@
+SQL> set TIMING on
+SQL> column column_name format a20
+SQL> set linesize 200
+SQL> 
+SQL> --Below query is used to find the number of movies in a date range of 10 years for actors and actresses I have got and chosen in 1a analysis
+SQL> SELECT
+  2      name
+  3      || ','
+  4      || date_range
+  5      || ','
+  6      || (SUM(number_of_movies)) as "Name, Date Range, Number of Movies in the Range"
+  7  FROM
+  8      (
+  9          SELECT
+ 10              nb.primaryname AS name,
+ 11              tb.startyear,
+ 12              COUNT(*)       AS number_of_movies,
+ 13              CASE
+ 14                  WHEN tb.startyear BETWEEN 2011 AND 2020 THEN
+ 15                      '2011- 2020'
+ 16                  WHEN tb.startyear BETWEEN 2001 AND 2010 THEN
+ 17                      '2001-2010'
+ 18                  WHEN tb.startyear BETWEEN 1991 AND 2000 THEN
+ 19                      '1991-2000'
+ 20                  WHEN tb.startyear BETWEEN 1981 AND 1990 THEN
+ 21                      '1981-1990'
+ 22                  WHEN tb.startyear BETWEEN 1971 AND 1980 THEN
+ 23                      '1971-1980'
+ 24                  WHEN tb.startyear BETWEEN 1961 AND 1970 THEN
+ 25                      '1961-1970'
+ 26                  WHEN tb.startyear BETWEEN 1951 AND 1960 THEN
+ 27                      '1951-1960'
+ 28                  WHEN tb.startyear BETWEEN 1941 AND 1950 THEN
+ 29                      '1941-1950'
+ 30                  WHEN tb.startyear BETWEEN 1931 AND 1940 THEN
+ 31                      '1931-1940'
+ 32                  WHEN tb.startyear BETWEEN 1921 AND 1930 THEN
+ 33                      '1921-1930'
+ 34                  ELSE
+ 35                      '2021-2030'
+ 36              END            AS date_range
+ 37          FROM
+ 38              imdb00.name_basics      nb,
+ 39              imdb00.title_principals tp,
+ 40              imdb00.title_basics     tb
+ 41          WHERE
+ 42                  nb.nconst = tp.nconst
+ 43              AND tp.tconst = tb.tconst
+ 44              AND nb.nconst IN ( 'nm0000093', 'nm0000129' )
+ 45              AND lower(tb.titletype) LIKE '%movie%'
+ 46              AND lower(tp.category) LIKE '%actor%'
+ 47              AND lower(tb.startyear) NOT LIKE '\n'
+ 48          GROUP BY
+ 49              nb.nconst,
+ 50              nb.primaryname,
+ 51              tb.startyear
+ 52          UNION ALL
+ 53          SELECT
+ 54              nb.primaryname AS name,
+ 55              tb.startyear,
+ 56              COUNT(*)       AS number_of_movies,
+ 57              CASE
+ 58                  WHEN tb.startyear BETWEEN 2011 AND 2020 THEN
+ 59                      '2011- 2020'
+ 60                  WHEN tb.startyear BETWEEN 2001 AND 2010 THEN
+ 61                      '2001-2010'
+ 62                  WHEN tb.startyear BETWEEN 1991 AND 2000 THEN
+ 63                      '1991-2000'
+ 64                  WHEN tb.startyear BETWEEN 1981 AND 1990 THEN
+ 65                      '1981-1990'
+ 66                  WHEN tb.startyear BETWEEN 1971 AND 1980 THEN
+ 67                      '1971-1980'
+ 68                  WHEN tb.startyear BETWEEN 1961 AND 1970 THEN
+ 69                      '1961-1970'
+ 70                  WHEN tb.startyear BETWEEN 1951 AND 1960 THEN
+ 71                      '1951-1960'
+ 72                  WHEN tb.startyear BETWEEN 1941 AND 1950 THEN
+ 73                      '1941-1950'
+ 74                  WHEN tb.startyear BETWEEN 1931 AND 1940 THEN
+ 75                      '1931-1940'
+ 76                  WHEN tb.startyear BETWEEN 1921 AND 1930 THEN
+ 77                      '1921-1930'
+ 78                  ELSE
+ 79                      '2021-2030'
+ 80              END            AS date_range
+ 81          FROM
+ 82              imdb00.name_basics      nb,
+ 83              imdb00.title_principals tp,
+ 84              imdb00.title_basics     tb
+ 85          WHERE
+ 86                  nb.nconst = tp.nconst
+ 87              AND tp.tconst = tb.tconst
+ 88              AND nb.nconst IN ( 'nm0000031', 'nm0000701' )
+ 89              AND lower(tb.titletype) LIKE '%movie%'
+ 90              AND lower(tp.category) LIKE '%actress%'
+ 91              AND lower(tb.startyear) NOT LIKE '\n'
+ 92          GROUP BY
+ 93              nb.nconst,
+ 94              nb.primaryname,
+ 95              tb.startyear
+ 96      )
+ 97  GROUP BY
+ 98      name,
+ 99      date_range
+100  ORDER BY
+101      name,
+102      date_range;
+
+Name, Date Range, Number of Movies in the Range                                                                                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Brad Pitt,1981-1990,4
+Brad Pitt,1991-2000,16
+Brad Pitt,2001-2010,15
+Brad Pitt,2011- 2020,14
+Brad Pitt,2021-2030,2
+Kate Winslet,1991-2000,9
+Kate Winslet,2001-2010,16
+Kate Winslet,2011- 2020,18
+Kate Winslet,2021-2030,4
+Katharine Hepburn,1931-1940,16
+Katharine Hepburn,1941-1950,9
+
+Name, Date Range, Number of Movies in the Range                                                                                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Katharine Hepburn,1951-1960,7
+Katharine Hepburn,1961-1970,4
+Katharine Hepburn,1971-1980,7
+Katharine Hepburn,1981-1990,4
+Katharine Hepburn,1991-2000,4
+Tom Cruise,1981-1990,10
+Tom Cruise,1991-2000,9
+Tom Cruise,2001-2010,11
+Tom Cruise,2011- 2020,10
+Tom Cruise,2021-2030,3
+
+21 rows selected. 
+
+Elapsed: 00:00:06.797
+SQL> 
+SQL> --Below query is used to find the number of movies along with their average ratings in a date range of 10 years for actors and actresses I have got and chosen in 1a analysis
+SQL> SELECT
+  2      name
+  3      || ','
+  4      || date_range
+  5      || ','
+  6      || AVG(average_rating)
+  7      || ','
+  8      || (SUM(number_of_movies)) as "Name, Date Range, Average Movies Rating in the Range, Number of Movies in the Range"
+  9  FROM
+ 10      (
+ 11          SELECT
+ 12              nb.primaryname        AS name,
+ 13              AVG(tr.averagerating) AS average_rating,
+ 14              tb.startyear,
+ 15              COUNT(*)              AS number_of_movies,
+ 16              CASE
+ 17                  WHEN tb.startyear BETWEEN 2011 AND 2020 THEN
+ 18                      '2011- 2020'
+ 19                  WHEN tb.startyear BETWEEN 2001 AND 2010 THEN
+ 20                      '2001-2010'
+ 21                  WHEN tb.startyear BETWEEN 1991 AND 2000 THEN
+ 22                      '1991-2000'
+ 23                  WHEN tb.startyear BETWEEN 1981 AND 1990 THEN
+ 24                      '1981-1990'
+ 25                  WHEN tb.startyear BETWEEN 1971 AND 1980 THEN
+ 26                      '1971-1980'
+ 27                  WHEN tb.startyear BETWEEN 1961 AND 1970 THEN
+ 28                      '1961-1970'
+ 29                  WHEN tb.startyear BETWEEN 1951 AND 1960 THEN
+ 30                      '1951-1960'
+ 31                  WHEN tb.startyear BETWEEN 1941 AND 1950 THEN
+ 32                      '1941-1950'
+ 33                  WHEN tb.startyear BETWEEN 1931 AND 1940 THEN
+ 34                      '1931-1940'
+ 35                  WHEN tb.startyear BETWEEN 1921 AND 1930 THEN
+ 36                      '1921-1930'
+ 37                  ELSE
+ 38                      '2021-2030'
+ 39              END                   AS date_range
+ 40          FROM
+ 41              imdb00.title_ratings    tr,
+ 42              imdb00.name_basics      nb,
+ 43              imdb00.title_principals tp,
+ 44              imdb00.title_basics     tb
+ 45          WHERE
+ 46                  nb.nconst = tp.nconst
+ 47              AND tp.tconst = tb.tconst
+ 48              AND nb.nconst IN ( 'nm0000093', 'nm0000129' )
+ 49              AND tp.tconst = tr.tconst
+ 50              AND lower(tb.titletype) LIKE '%movie%'
+ 51              AND lower(tp.category) LIKE '%actor%'
+ 52              AND lower(tb.startyear) NOT LIKE '\n'
+ 53          GROUP BY
+ 54              nb.nconst,
+ 55              nb.primaryname,
+ 56              tb.startyear
+ 57          UNION ALL
+ 58          SELECT
+ 59              nb.primaryname        AS name,
+ 60              AVG(tr.averagerating) AS average_rating,
+ 61              tb.startyear,
+ 62              COUNT(*)              AS number_of_movies,
+ 63              CASE
+ 64                  WHEN tb.startyear BETWEEN 2011 AND 2020 THEN
+ 65                      '2011- 2020'
+ 66                  WHEN tb.startyear BETWEEN 2001 AND 2010 THEN
+ 67                      '2001-2010'
+ 68                  WHEN tb.startyear BETWEEN 1991 AND 2000 THEN
+ 69                      '1991-2000'
+ 70                  WHEN tb.startyear BETWEEN 1981 AND 1990 THEN
+ 71                      '1981-1990'
+ 72                  WHEN tb.startyear BETWEEN 1971 AND 1980 THEN
+ 73                      '1971-1980'
+ 74                  WHEN tb.startyear BETWEEN 1961 AND 1970 THEN
+ 75                      '1961-1970'
+ 76                  WHEN tb.startyear BETWEEN 1951 AND 1960 THEN
+ 77                      '1951-1960'
+ 78                  WHEN tb.startyear BETWEEN 1941 AND 1950 THEN
+ 79                      '1941-1950'
+ 80                  WHEN tb.startyear BETWEEN 1931 AND 1940 THEN
+ 81                      '1931-1940'
+ 82                  WHEN tb.startyear BETWEEN 1921 AND 1930 THEN
+ 83                      '1921-1930'
+ 84                  ELSE
+ 85                      '2021-2030'
+ 86              END                   AS date_range
+ 87          FROM
+ 88              imdb00.title_ratings    tr,
+ 89              imdb00.name_basics      nb,
+ 90              imdb00.title_principals tp,
+ 91              imdb00.title_basics     tb
+ 92          WHERE
+ 93                  nb.nconst = tp.nconst
+ 94              AND tp.tconst = tb.tconst
+ 95              AND nb.nconst IN ( 'nm0000031', 'nm0000701' )
+ 96              AND tp.tconst = tr.tconst
+ 97              AND lower(tb.titletype) LIKE '%movie%'
+ 98              AND lower(tp.category) LIKE '%actress%'
+ 99              AND lower(tb.startyear) NOT LIKE '\n'
+100          GROUP BY
+101              nb.nconst,
+102              nb.primaryname,
+103              tb.startyear
+104      )
+105  GROUP BY
+106      name,
+107      date_range
+108  ORDER BY
+109      name,
+110      date_range;
+
+Name, Date Range, Average Movies Rating in the Range, Number of Movies in the Range                                                                                                                     
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Brad Pitt,1981-1990,5.2,4
+Brad Pitt,1991-2000,7.10333333333333333333333333333333333333,16
+Brad Pitt,2001-2010,7.23055555555555555555555555555555555556,15
+Brad Pitt,2011- 2020,6.9625,14
+Kate Winslet,1991-2000,7.02142857142857142857142857142857142857,9
+Kate Winslet,2001-2010,6.80416666666666666666666666666666666667,16
+Kate Winslet,2011- 2020,6.48055555555555555555555555555555555556,18
+Kate Winslet,2021-2030,7.9,2
+Katharine Hepburn,1931-1940,6.77291666666666666666666666666666666667,16
+Katharine Hepburn,1941-1950,6.73571428571428571428571428571428571429,9
+Katharine Hepburn,1951-1960,7.06666666666666666666666666666666666667,7
+
+Name, Date Range, Average Movies Rating in the Range, Number of Movies in the Range                                                                                                                     
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Katharine Hepburn,1961-1970,7.3,4
+Katharine Hepburn,1971-1980,6.63,7
+Katharine Hepburn,1981-1990,6.6,4
+Katharine Hepburn,1991-2000,6.18333333333333333333333333333333333334,4
+Tom Cruise,1981-1990,6.37857142857142857142857142857142857143,10
+Tom Cruise,1991-2000,7.00555555555555555555555555555555555556,9
+Tom Cruise,2001-2010,6.995,11
+Tom Cruise,2011- 2020,7.025,10
+Tom Cruise,2021-2030,8.6,1
+
+20 rows selected. 
+
+Elapsed: 00:00:06.785
+SQL> 
+SQL> set timing off
+SQL> Set echo OFF

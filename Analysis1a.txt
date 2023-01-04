@@ -1,0 +1,396 @@
+SQL> set TIMING on
+SQL> column column_name format a20
+SQL> set linesize 200
+SQL> 
+SQL> --Query: to find the NCONST of an actor giving the name
+SQL> --you can also get NCONST info by searching the IMDB_Actors.txt file given to you
+SQL> 
+SQL> --Below queries are used to get primary keys which is NCONST for each of the actors/actresses that I have been given as well as chosen
+SQL> SELECT
+  2      nconst
+  3      || ','
+  4      || primaryname AS "Primary Key, Name"
+  5  FROM
+  6      imdb00.name_basics
+  7  WHERE
+  8      lower(primaryname) LIKE 'tom cruise' --nm0000129
+  9  UNION ALL
+ 10  SELECT
+ 11      nconst
+ 12      || ','
+ 13      || primaryname AS "Primary Key, Name"
+ 14  FROM
+ 15      imdb00.name_basics
+ 16  WHERE
+ 17      lower(primaryname) LIKE 'katharine hepburn' --nm0000031
+ 18  UNION ALL
+ 19  SELECT
+ 20      nconst
+ 21      || ','
+ 22      || primaryname AS "Primary Key, Name"
+ 23  FROM
+ 24      imdb00.name_basics
+ 25  WHERE
+ 26      lower(primaryname) LIKE 'kate winslet' --nm0000701
+ 27  UNION ALL
+ 28  SELECT
+ 29      nconst
+ 30      || ','
+ 31      || primaryname AS "Primary Key, Name"
+ 32  FROM
+ 33      imdb00.name_basics
+ 34  WHERE
+ 35      lower(primaryname) LIKE 'brad pitt';
+
+Primary Key, Name                                                                                                                                                                                       
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0000129,Tom Cruise
+nm0000031,Katharine Hepburn
+nm0000701,Kate Winslet
+nm0000093,Brad Pitt
+
+Elapsed: 00:00:15.241
+SQL> --nm0000093
+SQL> 
+SQL> --Below query will give us the year range the actor Tom Cruise has worked along with number of movies he has released each year:
+SQL> SELECT
+  2      nb.primaryname
+  3      || ','
+  4      || tb.startyear
+  5      || ','
+  6      || COUNT(*) AS "Name, Year, Yearly Movie Count"
+  7  FROM
+  8      imdb00.name_basics      nb,
+  9      imdb00.title_principals tp,
+ 10      imdb00.title_basics     tb
+ 11  WHERE
+ 12          nb.nconst = tp.nconst
+ 13      AND tp.tconst = tb.tconst
+ 14      AND nb.nconst = 'nm0000129'
+ 15      AND lower(tb.titletype) LIKE '%movie%'
+ 16      AND lower(tp.category) LIKE '%actor%'
+ 17      AND lower(tb.startyear) NOT LIKE '\n'
+ 18  GROUP BY
+ 19      nb.nconst,
+ 20      nb.primaryname,
+ 21      tb.startyear
+ 22  ORDER BY
+ 23      tb.startyear;
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Tom Cruise,1982,1
+Tom Cruise,1983,2
+Tom Cruise,1985,1
+Tom Cruise,1986,2
+Tom Cruise,1988,2
+Tom Cruise,1989,1
+Tom Cruise,1990,1
+Tom Cruise,1992,3
+Tom Cruise,1993,1
+Tom Cruise,1994,1
+Tom Cruise,1996,2
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Tom Cruise,1999,1
+Tom Cruise,2000,1
+Tom Cruise,2001,1
+Tom Cruise,2002,2
+Tom Cruise,2003,1
+Tom Cruise,2004,1
+Tom Cruise,2005,1
+Tom Cruise,2006,1
+Tom Cruise,2007,1
+Tom Cruise,2008,1
+Tom Cruise,2009,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Tom Cruise,2010,1
+Tom Cruise,2011,1
+Tom Cruise,2012,2
+Tom Cruise,2013,1
+Tom Cruise,2014,1
+Tom Cruise,2015,1
+Tom Cruise,2016,1
+Tom Cruise,2017,2
+Tom Cruise,2018,1
+Tom Cruise,2022,1
+Tom Cruise,2023,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Tom Cruise,2024,1
+
+34 rows selected. 
+
+Elapsed: 00:00:02.524
+SQL> 
+SQL> --Below query will give us the year range the actress Katharine Hepburn has worked along with number of movies she has released each year:    
+SQL> SELECT
+  2      nb.primaryname
+  3      || ','
+  4      || tb.startyear
+  5      || ','
+  6      || COUNT(*) AS "Name, Year, Yearly Movie Count"
+  7  FROM
+  8      imdb00.name_basics      nb,
+  9      imdb00.title_principals tp,
+ 10      imdb00.title_basics     tb
+ 11  WHERE
+ 12          nb.nconst = tp.nconst
+ 13      AND tp.tconst = tb.tconst
+ 14      AND nb.nconst = 'nm0000031'
+ 15      AND lower(tb.titletype) LIKE '%movie%'
+ 16      AND lower(tp.category) LIKE '%actress%'
+ 17      AND lower(tb.startyear) NOT LIKE '\n'
+ 18  GROUP BY
+ 19      nb.nconst,
+ 20      nb.primaryname,
+ 21      tb.startyear
+ 22  ORDER BY
+ 23      tb.startyear;
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Katharine Hepburn,1932,1
+Katharine Hepburn,1933,3
+Katharine Hepburn,1934,2
+Katharine Hepburn,1935,3
+Katharine Hepburn,1936,2
+Katharine Hepburn,1937,2
+Katharine Hepburn,1938,2
+Katharine Hepburn,1940,1
+Katharine Hepburn,1942,2
+Katharine Hepburn,1944,1
+Katharine Hepburn,1945,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Katharine Hepburn,1946,1
+Katharine Hepburn,1947,2
+Katharine Hepburn,1948,1
+Katharine Hepburn,1949,1
+Katharine Hepburn,1951,1
+Katharine Hepburn,1952,1
+Katharine Hepburn,1955,1
+Katharine Hepburn,1956,2
+Katharine Hepburn,1957,1
+Katharine Hepburn,1959,1
+Katharine Hepburn,1962,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Katharine Hepburn,1967,1
+Katharine Hepburn,1968,1
+Katharine Hepburn,1969,1
+Katharine Hepburn,1971,1
+Katharine Hepburn,1973,2
+Katharine Hepburn,1975,2
+Katharine Hepburn,1978,1
+Katharine Hepburn,1979,1
+Katharine Hepburn,1981,1
+Katharine Hepburn,1984,1
+Katharine Hepburn,1986,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Katharine Hepburn,1988,1
+Katharine Hepburn,1992,1
+Katharine Hepburn,1994,3
+
+36 rows selected. 
+
+Elapsed: 00:00:02.127
+SQL> 
+SQL> --Below query will give us the year range the actress Kate Winslet has worked along with number of movies she has released each year:
+SQL> SELECT
+  2      nb.primaryname
+  3      || ','
+  4      || tb.startyear
+  5      || ','
+  6      || COUNT(*) AS "Name, Year, Yearly Movie Count"
+  7  FROM
+  8      imdb00.name_basics      nb,
+  9      imdb00.title_principals tp,
+ 10      imdb00.title_basics     tb
+ 11  WHERE
+ 12          nb.nconst = tp.nconst
+ 13      AND tp.tconst = tb.tconst
+ 14      AND nb.nconst = 'nm0000701'
+ 15      AND lower(tb.titletype) LIKE '%movie%'
+ 16      AND lower(tp.category) LIKE '%actress%'
+ 17      AND lower(tb.startyear) NOT LIKE '\n'
+ 18  GROUP BY
+ 19      nb.nconst,
+ 20      nb.primaryname,
+ 21      tb.startyear
+ 22  ORDER BY
+ 23      tb.startyear;
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kate Winslet,1994,1
+Kate Winslet,1995,1
+Kate Winslet,1996,2
+Kate Winslet,1997,1
+Kate Winslet,1998,1
+Kate Winslet,1999,2
+Kate Winslet,2000,1
+Kate Winslet,2001,3
+Kate Winslet,2003,3
+Kate Winslet,2004,3
+Kate Winslet,2005,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kate Winslet,2006,4
+Kate Winslet,2008,2
+Kate Winslet,2011,2
+Kate Winslet,2013,1
+Kate Winslet,2014,2
+Kate Winslet,2015,3
+Kate Winslet,2016,1
+Kate Winslet,2017,4
+Kate Winslet,2018,1
+Kate Winslet,2019,2
+Kate Winslet,2020,2
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kate Winslet,2021,1
+Kate Winslet,2022,2
+Kate Winslet,2023,1
+
+25 rows selected. 
+
+Elapsed: 00:00:01.683
+SQL> 
+SQL> --Below query will give us the year range the actor Brad Pitt has worked along with number of movies he has released each year:    
+SQL> SELECT
+  2      nb.primaryname
+  3      || ','
+  4      || tb.startyear
+  5      || ','
+  6      || COUNT(*) AS "Name, Year, Yearly Movie Count"
+  7  FROM
+  8      imdb00.name_basics      nb,
+  9      imdb00.title_principals tp,
+ 10      imdb00.title_basics     tb
+ 11  WHERE
+ 12          nb.nconst = tp.nconst
+ 13      AND tp.tconst = tb.tconst
+ 14      AND nb.nconst = 'nm0000093'
+ 15      AND lower(tb.titletype) LIKE '%movie%'
+ 16      AND lower(tp.category) LIKE '%actor%'
+ 17      AND lower(tb.startyear) NOT LIKE '\n'
+ 18  GROUP BY
+ 19      nb.nconst,
+ 20      nb.primaryname,
+ 21      tb.startyear
+ 22  ORDER BY
+ 23      tb.startyear;
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Brad Pitt,1988,1
+Brad Pitt,1989,1
+Brad Pitt,1990,2
+Brad Pitt,1991,1
+Brad Pitt,1992,2
+Brad Pitt,1993,1
+Brad Pitt,1994,3
+Brad Pitt,1995,2
+Brad Pitt,1996,1
+Brad Pitt,1997,2
+Brad Pitt,1998,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Brad Pitt,1999,1
+Brad Pitt,2000,2
+Brad Pitt,2001,4
+Brad Pitt,2003,1
+Brad Pitt,2004,2
+Brad Pitt,2005,1
+Brad Pitt,2006,1
+Brad Pitt,2007,2
+Brad Pitt,2008,2
+Brad Pitt,2009,1
+Brad Pitt,2010,1
+
+Name, Year, Yearly Movie Count                                                                                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Brad Pitt,2011,2
+Brad Pitt,2012,1
+Brad Pitt,2013,2
+Brad Pitt,2014,1
+Brad Pitt,2015,3
+Brad Pitt,2016,2
+Brad Pitt,2017,1
+Brad Pitt,2019,2
+Brad Pitt,2022,2
+
+31 rows selected. 
+
+Elapsed: 00:00:02.659
+SQL> 
+SQL> --Year Span for the above actors and actresses
+SQL> SELECT
+  2      nb.primaryname
+  3      || ','
+  4      || MAX(tb.startyear)
+  5      || ','
+  6      || MIN(tb.startyear)
+  7      || ','
+  8      || ( MAX(tb.startyear) - MIN(tb.startyear) ) AS "Name, Latest Movie Year, First Acted Movie Year, Total Span of Acting Career in Years"
+  9  FROM
+ 10      imdb00.name_basics      nb,
+ 11      imdb00.title_principals tp,
+ 12      imdb00.title_basics     tb
+ 13  WHERE
+ 14          nb.nconst = tp.nconst
+ 15      AND tp.tconst = tb.tconst
+ 16      AND nb.nconst IN ( 'nm0000093', 'nm0000129' )
+ 17      AND lower(tb.titletype) LIKE '%movie%'
+ 18      AND lower(tp.category) LIKE '%actor%'
+ 19      AND lower(tb.startyear) NOT LIKE '\n'
+ 20  GROUP BY
+ 21      nb.nconst,
+ 22      nb.primaryname
+ 23  UNION ALL
+ 24  SELECT
+ 25      nb.primaryname
+ 26      || ','
+ 27      || MAX(tb.startyear)
+ 28      || ','
+ 29      || MIN(tb.startyear)
+ 30      || ','
+ 31      || ( MAX(tb.startyear) - MIN(tb.startyear) ) AS "Name, Latest Movie Year, First Acted Movie Year, Total Span of Acting Career in Years"
+ 32  FROM
+ 33      imdb00.name_basics      nb,
+ 34      imdb00.title_principals tp,
+ 35      imdb00.title_basics     tb
+ 36  WHERE
+ 37          nb.nconst = tp.nconst
+ 38      AND tp.tconst = tb.tconst
+ 39      AND nb.nconst IN ( 'nm0000701', 'nm0000031' )
+ 40      AND lower(tb.titletype) LIKE '%movie%'
+ 41      AND lower(tp.category) LIKE '%actress%'
+ 42      AND lower(tb.startyear) NOT LIKE '\n'
+ 43  GROUP BY
+ 44      nb.nconst,
+ 45      nb.primaryname;
+
+Name, Latest Movie Year, First Acted Movie Year, Total Span of Acting Career in Years                                                                                                                   
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Brad Pitt,2022,1988,34
+Tom Cruise,2024,1982,42
+Katharine Hepburn,1994,1932,62
+Kate Winslet,2023,1994,29
+
+Elapsed: 00:00:11.219
+SQL> 
+SQL> set timing off
+SQL> Set echo OFF

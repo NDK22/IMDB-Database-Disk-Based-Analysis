@@ -1,0 +1,582 @@
+SQL> set TIMING on
+SQL> column column_name format a20
+SQL> set linesize 200
+SQL> 
+SQL> --Analysis 2:
+SQL> --year range 1964 to 1973
+SQL> --This contains the maximum number of movies & minimum numbers of movies acted by the actor and actress totally in that year range which is a part of 2(a) analysis
+SQL> --This also contains the maximum number of movies & minimum numbers of movies acted by the actor and actress in a year, in that year range which is a part of 2(b) analysis
+SQL> 
+SQL> --Below query will help us to find the actors and actresses who have acted in maximum number of movies in the entire year range from 1964 to 1973.
+SQL> (
+  2      SELECT
+  3          nb.nconst
+  4          || ','
+  5          || nb.primaryname
+  6          || ','
+  7          || COUNT(*)
+  8          || ','
+  9          || tp.category as "Primary Key, Name, Maximum Number of Movies from 1964 to 1973, Profession"
+ 10      FROM
+ 11          imdb00.name_basics      nb,
+ 12          imdb00.title_principals tp,
+ 13          imdb00.title_basics     tb
+ 14      WHERE
+ 15              nb.nconst = tp.nconst
+ 16          AND tp.tconst = tb.tconst
+ 17          AND lower(tp.category) LIKE '%actor%'
+ 18          AND lower(tb.titletype) LIKE '%movie%'
+ 19          AND lower(tb.startyear) NOT LIKE '\n'
+ 20          AND tb.startyear BETWEEN '1964' AND '1973'
+ 21      GROUP BY
+ 22          nb.primaryname,
+ 23          nb.nconst,
+ 24          tp.category
+ 25      ORDER BY
+ 26          COUNT(*) DESC
+ 27      FETCH FIRST 1 ROW WITH TIES
+ 28  )
+ 29  UNION ALL
+ 30  (
+ 31      SELECT
+ 32          nb.nconst
+ 33          || ','
+ 34          || nb.primaryname
+ 35          || ','
+ 36          || COUNT(*)
+ 37          || ','
+ 38          || tp.category as "Primary Key, Name, Maximum Number of Movies from 1964 to 1973, Profession"
+ 39      FROM
+ 40          imdb00.name_basics      nb,
+ 41          imdb00.title_principals tp,
+ 42          imdb00.title_basics     tb
+ 43      WHERE
+ 44              nb.nconst = tp.nconst
+ 45          AND tp.tconst = tb.tconst
+ 46          AND lower(tp.category) LIKE '%actress%'
+ 47          AND lower(tb.titletype) LIKE '%movie%'
+ 48          AND lower(tb.startyear) NOT LIKE '\n'
+ 49          AND tb.startyear BETWEEN '1964' AND '1973'
+ 50      GROUP BY
+ 51          nb.primaryname,
+ 52          nb.nconst,
+ 53          tp.category
+ 54      ORDER BY
+ 55          COUNT(*) DESC
+ 56      FETCH FIRST 1 ROW WITH TIES
+ 57  );
+
+Primary Key, Name, Maximum Number of Movies from 1964 to 1973, Profession                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0793813,Sung-il Shin,304,actor
+nm0453520,Ji-mee Kim,182,actress
+
+Elapsed: 00:00:28.940
+SQL> 
+SQL> --Below query will help us to find the actors and actresses who have acted in minimum number of movies in the entire year range from 1964 to 1973
+SQL> --I have kept minimum number of movies count to be at least 3 in order to reduce the output count
+SQL> (
+  2      SELECT
+  3          nb.nconst
+  4          || ','
+  5          || nb.primaryname
+  6          || ','
+  7          || COUNT(*)
+  8          || ','
+  9          || tp.category  as "Primary Key, Name, Minimum Number of Movies from 1964 to 1973, Profession"
+ 10      FROM
+ 11          imdb00.name_basics      nb,
+ 12          imdb00.title_principals tp,
+ 13          imdb00.title_basics     tb
+ 14      WHERE
+ 15              nb.nconst = tp.nconst
+ 16          AND tp.tconst = tb.tconst
+ 17          AND lower(tp.category) LIKE '%actor%'
+ 18          AND lower(tb.titletype) LIKE '%movie%'
+ 19          AND lower(tb.startyear) NOT LIKE '\n'
+ 20          AND tb.startyear BETWEEN '1964' AND '1973'
+ 21      GROUP BY
+ 22          nb.primaryname,
+ 23          nb.nconst,
+ 24          tp.category
+ 25      HAVING
+ 26          COUNT(*) >= 3
+ 27      ORDER BY
+ 28          COUNT(*)
+ 29      FETCH FIRST 10 ROW ONLY -- as there are 2510 actors who have acted in exactly 3 movies from 1964 to 1973 I am printing just 10 rows
+ 30  )
+ 31  UNION ALL
+ 32  (
+ 33      SELECT
+ 34          nb.nconst
+ 35          || ','
+ 36          || nb.primaryname
+ 37          || ','
+ 38          || COUNT(*)
+ 39          || ','
+ 40          || tp.category  as "Primary Key, Name, Minimum Number of Movies from 1964 to 1973, Profession"
+ 41      FROM
+ 42          imdb00.name_basics      nb,
+ 43          imdb00.title_principals tp,
+ 44          imdb00.title_basics     tb
+ 45      WHERE
+ 46              nb.nconst = tp.nconst
+ 47          AND tp.tconst = tb.tconst
+ 48          AND lower(tp.category) LIKE '%actress%'
+ 49          AND lower(tb.titletype) LIKE '%movie%'
+ 50          AND lower(tb.startyear) NOT LIKE '\n'
+ 51          AND tb.startyear BETWEEN '1964' AND '1973'
+ 52      GROUP BY
+ 53          nb.primaryname,
+ 54          nb.nconst,
+ 55          tp.category
+ 56      HAVING
+ 57          COUNT(*) >= 3
+ 58      ORDER BY
+ 59          COUNT(*)
+ 60      FETCH FIRST 10 ROW ONLY -- as there are 1739 actresses who have acted in exactly 3 movies from 1964 to 1973 I am printing just 10 rows
+ 61  );
+
+Primary Key, Name, Minimum Number of Movies from 1964 to 1973, Profession                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0000453,Ian Holm,3,actor
+nm0007555,Tõnu Aav,3,actor
+nm0008638,Erich Aberle,3,actor
+nm0003857,Mel Stewart,3,actor
+nm0000890,Noah Beery Jr.,3,actor
+nm0002103,Julian Glover,3,actor
+nm0001765,Harry Dean Stanton,3,actor
+nm0001891,Anthony Higgins,3,actor
+nm0000897,Ralph Bellamy,3,actor
+nm0002935,Moe Howard,3,actor
+nm0000066,Jane Russell,3,actress
+
+Primary Key, Name, Minimum Number of Movies from 1964 to 1973, Profession                                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0021511,Annick Allières,3,actress
+nm0016200,Tota Alba,3,actress
+nm0014096,Fatimah Ahmad,3,actress
+nm0000828,Barbara Bain,3,actress
+nm0016372,Adriana Alben,3,actress
+nm0006428,Arlene Dahl,3,actress
+nm0001931,Binnie Barnes,3,actress
+nm0001677,Ginger Rogers,3,actress
+nm0015167,Naimah Akef,3,actress
+
+20 rows selected. 
+
+Elapsed: 00:00:29.893
+SQL> 
+SQL> -- Query to show number of actors/actresses who have done exactly 3 movies from the year 1964 to the year 1973
+SQL> SELECT
+  2      profession
+  3      || ','
+  4      || COUNT(*) AS "Profession, Number of acting professionals with 3 movies"
+  5  FROM
+  6      (
+  7          SELECT
+  8              nb.nconst      AS actor_id,
+  9              nb.primaryname AS name,
+ 10              COUNT(*)       AS number_of_movies_from_1964_to_1973,
+ 11              tp.category    AS profession
+ 12          FROM
+ 13              imdb00.name_basics      nb,
+ 14              imdb00.title_principals tp,
+ 15              imdb00.title_basics     tb
+ 16          WHERE
+ 17                  nb.nconst = tp.nconst
+ 18              AND tp.tconst = tb.tconst
+ 19              AND lower(tp.category) LIKE '%actor%'
+ 20              AND lower(tb.titletype) LIKE '%movie%'
+ 21              AND lower(tb.startyear) NOT LIKE '\n'
+ 22              AND tb.startyear BETWEEN '1964' AND '1973'
+ 23          GROUP BY
+ 24              nb.primaryname,
+ 25              nb.nconst,
+ 26              tp.category
+ 27          HAVING
+ 28              COUNT(*) = 3
+ 29      )
+ 30  GROUP BY
+ 31      profession
+ 32  UNION ALL
+ 33  SELECT
+ 34      profession
+ 35      || ','
+ 36      || COUNT(*) AS "Profession, Number of acting professionals with 3 movies"
+ 37  FROM
+ 38      (
+ 39          SELECT
+ 40              nb.nconst      AS actor_id,
+ 41              nb.primaryname AS name,
+ 42              COUNT(*)       AS number_of_movies_from_1964_to_1973,
+ 43              tp.category    AS profession
+ 44          FROM
+ 45              imdb00.name_basics      nb,
+ 46              imdb00.title_principals tp,
+ 47              imdb00.title_basics     tb
+ 48          WHERE
+ 49                  nb.nconst = tp.nconst
+ 50              AND tp.tconst = tb.tconst
+ 51              AND lower(tp.category) LIKE '%actress%'
+ 52              AND lower(tb.titletype) LIKE '%movie%'
+ 53              AND lower(tb.startyear) NOT LIKE '\n'
+ 54              AND tb.startyear BETWEEN '1964' AND '1973'
+ 55          GROUP BY
+ 56              nb.primaryname,
+ 57              nb.nconst,
+ 58              tp.category
+ 59          HAVING
+ 60              COUNT(*) = 3
+ 61      )
+ 62  GROUP BY
+ 63      profession;
+
+Profession, Number of acting professionals with 3 movies                                                                                                                                                
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+actor,2510
+actress,1739
+
+Elapsed: 00:00:33.975
+SQL> 
+SQL> --2b)
+SQL> --the maximum number of movies acted by the actors and actresses in a year, in the year range 1964 to 1973
+SQL> 
+SQL> (
+  2      SELECT
+  3          *
+  4      FROM
+  5          (
+  6              SELECT
+  7                  actor_id
+  8                  || ','
+  9                  || name
+ 10                  || ','
+ 11                  || year
+ 12                  || ','
+ 13                  || number_of_movies_in_a_year
+ 14                  || ','
+ 15                  || profession  as "Primary Key, Name, Year, Maximum Number of Movies in a Year from 1964 to 1973, Profession"
+ 16              FROM
+ 17                  (
+ 18                      SELECT
+ 19                          nb.nconst      AS actor_id,
+ 20                          nb.primaryname AS name,
+ 21                          tb.startyear   AS year,
+ 22                          COUNT(*)       AS number_of_movies_in_a_year,
+ 23                          tp.category    AS profession
+ 24                      FROM
+ 25                          imdb00.name_basics      nb,
+ 26                          imdb00.title_principals tp,
+ 27                          imdb00.title_basics     tb
+ 28                      WHERE
+ 29                              nb.nconst = tp.nconst
+ 30                          AND tp.tconst = tb.tconst
+ 31                          AND lower(tp.category) LIKE '%actor%'
+ 32                          AND lower(tb.titletype) LIKE '%movie%'
+ 33                          AND lower(tb.startyear) NOT LIKE '\n'
+ 34                          AND tb.startyear BETWEEN '1964' AND '1973'
+ 35                      GROUP BY
+ 36                          nb.primaryname,
+ 37                          tb.startyear,
+ 38                          nb.nconst,
+ 39                          tp.category
+ 40                      ORDER BY
+ 41                          COUNT(*) DESC
+ 42                      FETCH FIRST 1 ROW WITH TIES
+ 43                  )
+ 44              GROUP BY
+ 45                  name,
+ 46                  year,
+ 47                  actor_id,
+ 48                  profession,
+ 49                  number_of_movies_in_a_year
+ 50              ORDER BY
+ 51                  year
+ 52          )
+ 53  )
+ 54  UNION ALL
+ 55  (
+ 56      SELECT
+ 57          *
+ 58      FROM
+ 59          (
+ 60              SELECT
+ 61                  actor_id
+ 62                  || ','
+ 63                  || name
+ 64                  || ','
+ 65                  || year
+ 66                  || ','
+ 67                  || number_of_movies_in_a_year
+ 68                  || ','
+ 69                  || profession as "Primary Key, Name, Year, Maximum Number of Movies in a Year from 1964 to 1973, Profession"
+ 70              FROM
+ 71                  (
+ 72                      SELECT
+ 73                          nb.nconst      AS actor_id,
+ 74                          nb.primaryname AS name,
+ 75                          tb.startyear   AS year,
+ 76                          COUNT(*)       AS number_of_movies_in_a_year,
+ 77                          tp.category    AS profession
+ 78                      FROM
+ 79                          imdb00.name_basics      nb,
+ 80                          imdb00.title_principals tp,
+ 81                          imdb00.title_basics     tb
+ 82                      WHERE
+ 83                              nb.nconst = tp.nconst
+ 84                          AND tp.tconst = tb.tconst
+ 85                          AND lower(tp.category) LIKE '%actress%'
+ 86                          AND lower(tb.titletype) LIKE '%movie%'
+ 87                          AND lower(tb.startyear) NOT LIKE '\n'
+ 88                          AND tb.startyear BETWEEN '1964' AND '1973'
+ 89                      GROUP BY
+ 90                          nb.primaryname,
+ 91                          tb.startyear,
+ 92                          nb.nconst,
+ 93                          tp.category
+ 94                      ORDER BY
+ 95                          COUNT(*) DESC
+ 96                      FETCH FIRST 1 ROW WITH TIES
+ 97                  )
+ 98              GROUP BY
+ 99                  name,
+100                  year,
+101                  actor_id,
+102                  profession,
+103                  number_of_movies_in_a_year
+104              ORDER BY
+105                  year
+106          )
+107  );
+
+Primary Key, Name, Year, Maximum Number of Movies in a Year from 1964 to 1973, Profession                                                                                                               
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0793813,Sung-il Shin,1967,44,actor
+nm0006982,Adoor Bhasi,1973,44,actor
+nm1059046,Jeong-im Nam,1968,42,actress
+
+Elapsed: 00:00:31.152
+SQL> 
+SQL> 
+SQL> --The Minimum number of movies acted by the actors and actresses in a year, in the year range 1964 to 1973
+SQL> --I have kept minimum number of movies count to be at least 3 in order to reduce the output count
+SQL> (
+  2      SELECT
+  3          *
+  4      FROM
+  5          (
+  6              SELECT
+  7                  actor_id
+  8                  || ','
+  9                  || name
+ 10                  || ','
+ 11                  || year
+ 12                  || ','
+ 13                  || number_of_movies_in_a_year
+ 14                  || ','
+ 15                  || profession  as "Primary Key, Name, Year, Minimum 3 Number of Movies in a Year from 1964 to 1973, Profession"
+ 16              FROM
+ 17                  (
+ 18                      SELECT
+ 19                          nb.nconst      AS actor_id,
+ 20                          nb.primaryname AS name,
+ 21                          tb.startyear   AS year,
+ 22                          COUNT(*)       AS number_of_movies_in_a_year,
+ 23                          tp.category    AS profession
+ 24                      FROM
+ 25                          imdb00.name_basics      nb,
+ 26                          imdb00.title_principals tp,
+ 27                          imdb00.title_basics     tb
+ 28                      WHERE
+ 29                              nb.nconst = tp.nconst
+ 30                          AND tp.tconst = tb.tconst
+ 31                          AND lower(tp.category) LIKE '%actor%'
+ 32                          AND lower(tb.titletype) LIKE '%movie%'
+ 33                          AND lower(tb.startyear) NOT LIKE '\n'
+ 34                          AND tb.startyear BETWEEN '1964' AND '1973'
+ 35                      GROUP BY
+ 36                          nb.primaryname,
+ 37                          tb.startyear,
+ 38                          nb.nconst,
+ 39                          tp.category
+ 40                      HAVING
+ 41                          COUNT(*) >= 3
+ 42                      ORDER BY
+ 43                          COUNT(*)
+ 44                      FETCH FIRST 10 ROW ONLY -- as there are 4721 actors who have acted in exactly 3 movies each year from 1964 to 1973 I am printing just 10 rows
+ 45                  )
+ 46              GROUP BY
+ 47                  name,
+ 48                  year,
+ 49                  actor_id,
+ 50                  profession,
+ 51                  number_of_movies_in_a_year
+ 52              ORDER BY
+ 53                  year
+ 54          )
+ 55  )
+ 56  UNION ALL
+ 57  (
+ 58      SELECT
+ 59          *
+ 60      FROM
+ 61          (
+ 62              SELECT
+ 63                  actor_id
+ 64                  || ','
+ 65                  || name
+ 66                  || ','
+ 67                  || year
+ 68                  || ','
+ 69                  || number_of_movies_in_a_year
+ 70                  || ','
+ 71                  || profession  as "Primary Key, Name, Year, Minimum 3 Number of Movies in a Year from 1964 to 1973, Profession"
+ 72              FROM
+ 73                  (
+ 74                      SELECT
+ 75                          nb.nconst      AS actor_id,
+ 76                          nb.primaryname AS name,
+ 77                          tb.startyear   AS year,
+ 78                          COUNT(*)       AS number_of_movies_in_a_year,
+ 79                          tp.category    AS profession
+ 80                      FROM
+ 81                          imdb00.name_basics      nb,
+ 82                          imdb00.title_principals tp,
+ 83                          imdb00.title_basics     tb
+ 84                      WHERE
+ 85                              nb.nconst = tp.nconst
+ 86                          AND tp.tconst = tb.tconst
+ 87                          AND lower(tp.category) LIKE '%actress%'
+ 88                          AND lower(tb.titletype) LIKE '%movie%'
+ 89                          AND lower(tb.startyear) NOT LIKE '\n'
+ 90                          AND tb.startyear BETWEEN '1964' AND '1973'
+ 91                      GROUP BY
+ 92                          nb.primaryname,
+ 93                          tb.startyear,
+ 94                          nb.nconst,
+ 95                          tp.category
+ 96                      HAVING
+ 97                          COUNT(*) >= 3
+ 98                      ORDER BY
+ 99                          COUNT(*)
+100                      FETCH FIRST 10 ROW ONLY -- as there are 2704 actresses who have acted in exactly 3 movies each year from 1964 to 1973 I am printing just 10 rows
+101                  )
+102              GROUP BY
+103                  name,
+104                  year,
+105                  actor_id,
+106                  profession,
+107                  number_of_movies_in_a_year
+108              ORDER BY
+109                  year
+110          )
+111  );
+
+Primary Key, Name, Year, Minimum 3 Number of Movies in a Year from 1964 to 1973, Profession                                                                                                             
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0000062,Elvis Presley,1965,3,actor
+nm0000051,James Mason,1965,3,actor
+nm0000062,Elvis Presley,1967,3,actor
+nm0000142,Clint Eastwood,1968,3,actor
+nm0000062,Elvis Presley,1968,3,actor
+nm0000062,Elvis Presley,1969,3,actor
+nm0000052,Marcello Mastroianni,1971,3,actor
+nm0000308,Ernest Borgnine,1972,3,actor
+nm0000052,Marcello Mastroianni,1972,3,actor
+nm0000009,Richard Burton,1973,3,actor
+nm0000079,Raquel Welch,1966,3,actress
+
+Primary Key, Name, Year, Minimum 3 Number of Movies in a Year from 1964 to 1973, Profession                                                                                                             
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+nm0001141,Angie Dickinson,1969,3,actress
+nm0001012,Claudia Cardinale,1969,3,actress
+nm0000945,Jane Birkin,1969,3,actress
+nm0001547,Agnes Moorehead,1971,3,actress
+nm0000879,Anne Baxter,1971,3,actress
+nm0000302,Jacqueline Bisset,1971,3,actress
+nm0001180,Britt Ekland,1972,3,actress
+nm0001036,Geraldine Chaplin,1972,3,actress
+nm0000072,Elizabeth Taylor,1973,3,actress
+
+20 rows selected. 
+
+Elapsed: 00:00:39.847
+SQL> 
+SQL> -- Query to show number of actors/actresses who have done exactly 3 movies in a year from 1964 to 1973
+SQL> SELECT
+  2      profession
+  3      || ','
+  4      || COUNT(*) AS "Profession, Number of acting professionals with 3 movies in a year from 1964 to 1973"
+  5  FROM
+  6      (
+  7          SELECT
+  8              nb.nconst      AS actor_id,
+  9              nb.primaryname AS name,
+ 10              tb.startyear   AS year,
+ 11              COUNT(*)       AS number_of_movies_in_a_year,
+ 12              tp.category    AS profession
+ 13          FROM
+ 14              imdb00.name_basics      nb,
+ 15              imdb00.title_principals tp,
+ 16              imdb00.title_basics     tb
+ 17          WHERE
+ 18                  nb.nconst = tp.nconst
+ 19              AND tp.tconst = tb.tconst
+ 20              AND lower(tp.category) LIKE '%actor%'
+ 21              AND lower(tb.titletype) LIKE '%movie%'
+ 22              AND lower(tb.startyear) NOT LIKE '\n'
+ 23              AND tb.startyear BETWEEN '1964' AND '1973'
+ 24          GROUP BY
+ 25              nb.primaryname,
+ 26              tb.startyear,
+ 27              nb.nconst,
+ 28              tp.category
+ 29          HAVING
+ 30              COUNT(*) = 3
+ 31      )
+ 32  GROUP BY
+ 33      profession
+ 34  UNION ALL
+ 35  SELECT
+ 36      profession
+ 37      || ','
+ 38      || COUNT(*) as "Profession, Number of acting professionals with 3 movies in a year from 1964 to 1973"
+ 39  FROM
+ 40      (
+ 41          SELECT
+ 42              nb.nconst      AS actor_id,
+ 43              nb.primaryname AS name,
+ 44              tb.startyear   AS year,
+ 45              COUNT(*)       AS number_of_movies_in_a_year,
+ 46              tp.category    AS profession
+ 47          FROM
+ 48              imdb00.name_basics      nb,
+ 49              imdb00.title_principals tp,
+ 50              imdb00.title_basics     tb
+ 51          WHERE
+ 52                  nb.nconst = tp.nconst
+ 53              AND tp.tconst = tb.tconst
+ 54              AND lower(tp.category) LIKE '%actress%'
+ 55              AND lower(tb.titletype) LIKE '%movie%'
+ 56              AND lower(tb.startyear) NOT LIKE '\n'
+ 57              AND tb.startyear BETWEEN '1964' AND '1973'
+ 58          GROUP BY
+ 59              nb.primaryname,
+ 60              tb.startyear,
+ 61              nb.nconst,
+ 62              tp.category
+ 63          HAVING
+ 64              COUNT(*) = 3
+ 65      )
+ 66  GROUP BY
+ 67      profession;
+
+Profession, Number of acting professionals with 3 movies in a year from 1964 to 1973                                                                                                                    
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+actor,4721
+actress,2704
+
+Elapsed: 00:00:24.130
+SQL> 
+SQL> set echo off;
